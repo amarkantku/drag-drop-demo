@@ -1,9 +1,17 @@
-import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { act, render, screen, waitFor } from '@testing-library/react';
 import App from './App';
+import { server } from './mocks/server';
 
-test('renders learn react link', () => {
-  render(<App />);
-  const linkElement = screen.getByText(/learn react/i);
-  expect(linkElement).toBeInTheDocument();
+describe('<App /> test suite', () => {
+	beforeEach(() => server.listen());
+	afterEach(() => server.resetHandlers());
+	afterAll(() => server.close());
+
+	test('renders learn react link', async () => {
+		await act(() => render(<App />));
+		await waitFor(() => {
+			expect(screen.getByText('Tom')).toBeInTheDocument();
+			expect(screen.getByRole('list').children.length).toBe(3);
+		});
+	});
 });
